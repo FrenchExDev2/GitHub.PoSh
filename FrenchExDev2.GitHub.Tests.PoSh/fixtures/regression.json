@@ -1,0 +1,11 @@
+{
+  "Login": "fixture-user",
+  "Repository": "fixture-org/project",
+  "BaseSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "MetadataBaseSha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "HeadSha": "cccccccccccccccccccccccccccccccccccccccc",
+  "Ahead": 3,
+  "Behind": 12,
+  "Mode": "Eligible",
+  "Count": 1
+}

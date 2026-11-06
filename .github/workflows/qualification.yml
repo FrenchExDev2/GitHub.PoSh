@@ -1,0 +1,63 @@
+name: Offline qualification
+on:
+  workflow_call:
+    inputs:
+      quietcli_revision:
+        type: string
+        required: false
+        default: ''
+  workflow_dispatch:
+    inputs:
+      quietcli_revision:
+        description: Published immutable QuietCli revision containing Core >= 0.2.0
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+jobs:
+  offline:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          path: github-module
+      - name: Require an accessible compatible dependency revision
+        id: dependency
+        shell: pwsh
+        env:
+          QUIETCLI_REVISION: ${{ inputs.quietcli_revision || vars.QUIETCLI_REVISION }}
+        run: |
+          if ($env:QUIETCLI_REVISION -notmatch '^[0-9a-f]{40}$') {
+            throw 'Set QUIETCLI_REVISION to a published immutable QuietCli revision containing Core >= 0.2.0. The development 0.2.0 checkout is not yet public; public 0.1.0 is incompatible.'
+          }
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value ('revision=' + $env:QUIETCLI_REVISION) -Encoding utf8
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: FrenchExDev2/FrenchExDev2.QuietCli.PoSh
+          ref: ${{ steps.dependency.outputs.revision }}
+          persist-credentials: false
+          path: quietcli
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: quietcli/global.json
+          dotnet-quality: preview
+      - name: Prepare the explicitly selected Core dependency
+        shell: pwsh
+        run: ./github-module/scripts/Initialize-CiDependency.ps1 -QuietCliRoot ./quietcli
+      - name: Run offline scenarios, properties, fuzzing and mutations
+        shell: pwsh
+        run: |
+          $reports = Join-Path $env:RUNNER_TEMP 'github-qualification'
+          ./github-module/scripts/Invoke-WorkspaceTests.ps1 -Headless -RunDirectory $reports -CoreManifest ./quietcli/FrenchExDev2.QuietCli.Core.PoSh/FrenchExDev2.QuietCli.Core.PoSh.psd1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: github-offline-${{ matrix.os }}
+          path: ${{ runner.temp }}/github-qualification

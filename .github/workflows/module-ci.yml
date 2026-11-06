@@ -1,0 +1,22 @@
+name: GitHub module
+on:
+  pull_request:
+    paths:
+      - 'FrenchExDev2.GitHub.PoSh/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+      - '*.psd1'
+      - '.gitattributes'
+      - '.editorconfig'
+  push:
+    paths:
+      - 'FrenchExDev2.GitHub.PoSh/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+      - '.gitattributes'
+      - '.editorconfig'
+permissions:
+  contents: read
+jobs:
+  qualify:
+    uses: ./.github/workflows/qualification.yml

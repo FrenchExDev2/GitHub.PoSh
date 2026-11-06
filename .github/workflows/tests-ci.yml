@@ -1,0 +1,13 @@
+name: GitHub companion tests
+on:
+  pull_request:
+    paths:
+      - 'FrenchExDev2.GitHub.Tests.PoSh/**'
+  push:
+    paths:
+      - 'FrenchExDev2.GitHub.Tests.PoSh/**'
+permissions:
+  contents: read
+jobs:
+  qualify:
+    uses: ./.github/workflows/qualification.yml

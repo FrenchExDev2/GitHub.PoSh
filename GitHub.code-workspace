@@ -1,0 +1,8 @@
+{
+  "folders": [
+    { "name": "GitHubEcosystem", "path": "." },
+    { "name": "GitHub module", "path": "FrenchExDev2.GitHub.PoSh" },
+    { "name": "GitHub tests", "path": "FrenchExDev2.GitHub.Tests.PoSh" }
+  ],
+  "settings": { "files.encoding": "utf8", "files.eol": "\n" }
+}
